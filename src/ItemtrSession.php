@@ -30,12 +30,12 @@ class ItemtrSession implements IPaymentSession
 
     public function getTransId()
     {
-        return $this->trans_id;
+        return $this->trans->trans_id;
     }
 
     public function getData()
     {
-        return $this->paymentUrl;
+        return ['paymentUrl' => $this->paymentUrl];
     }
 
 }

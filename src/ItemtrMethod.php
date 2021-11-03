@@ -31,7 +31,7 @@ class ItemtrMethod implements IPaymentMethod
         $log->status = 0;//0 pending, 1 success, 2 failure
         $log->save();
         // 2. 
-        $username = Auth::user()->getAuthIdentifierName();
+        $username = Auth::user()->name;
         $session=[
             'userName'   => $username,
             'userID'	 => $trans->trans_id,
