@@ -19,7 +19,7 @@ class ItemtrController extends BaseController
         Log::debug("Itemtr callback data: " . print_r($request->all(), true));
         $SiparisID   = $request->input("siparisID");//mapping id
         $UserEmail   = $request->input("userEmail");
-        $roleId      = $request->input("userID");//~transaction id
+        $transId      = $request->input("userID");//~transaction id
         $userName    = $request->input("userName");
         $ReturnData  = $request->input("returnData");
         $Status      = $request->input("status");
@@ -30,7 +30,7 @@ class ItemtrController extends BaseController
         $Hash        = $request->input("hash");
         // 1. validate request
         // trans exists?
-        $log = ItemtrTransaction::where('trans', $roleId)->first();
+        $log = ItemtrTransaction::where('trans', $transId)->first();
         if (empty($log))
         {
             return response('e1');
@@ -38,7 +38,7 @@ class ItemtrController extends BaseController
         // check integrity
         $apiKey = $log->key;
         $apiSecret = $log->secret;
-        $hashKontrol = base64_encode(hash_hmac('sha256',$SiparisID."|".$roleId."|".$ReturnData."|".$Status."|".$OdemeKanali."|".$OdemeTutari."|".$NetKazanc."|".$apiKey, $apiSecret, true));
+        $hashKontrol = base64_encode(hash_hmac('sha256',$SiparisID."|".$transId."|".$ReturnData."|".$Status."|".$OdemeKanali."|".$OdemeTutari."|".$NetKazanc."|".$apiKey, $apiSecret, true));
         if ($hashKontrol != $Hash)
         {
             return response("e2");
@@ -55,11 +55,11 @@ class ItemtrController extends BaseController
             event(new TransactionUpdated($log->trans));
             $log->amount = $OdemeTutari;
             $log->net_amount = $NetKazanc;
-            $log = 1;
+            $log->status = 1;
         }
         else 
         {
-            $log = 2;
+            $log->status = 2;
         }
         $log->save();
         return response("OK");
